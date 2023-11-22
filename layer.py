@@ -4,9 +4,23 @@ class Layer:
         self.output = None
 
     def forward(self, input):
-        # TODO: return output
+        """
+        Performs the forward pass of the layer.
+
+        Args:
+            input: The input data.
+
+        Returns:
+            The output of the layer.
+        """
         pass
 
     def backward(self, output_gradient, learning_rate):
-        # TODO: update parameters and return input gradient
+        """
+        Performs the backward pass of the layer.
+
+        Args:
+            output_gradient: The gradient of the loss with respect to the layer's output.
+            learning_rate: The learning rate for updating the layer's parameters.
+        """
         pass

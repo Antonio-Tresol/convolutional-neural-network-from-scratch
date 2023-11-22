@@ -76,6 +76,3 @@ class Softmax(Layer):
         """
         n = np.size(self.output)
         return np.dot((np.identity(n) - self.output.T) * self.output, output_gradient)
-        # Original formula:
-        # tmp = np.tile(self.output, n)
-        # return np.dot(tmp * (np.identity(n) - np.transpose(tmp)), output_gradient)
