@@ -1,6 +1,7 @@
 import cupy as np
 from cupyx.scipy import signal
 from layer import Layer
+import pickle as pkl
 
 
 class Convolutional(Layer):
@@ -75,3 +76,35 @@ class Convolutional(Layer):
         self.kernels -= learning_rate * kernels_gradient
         self.biases -= learning_rate * output_gradient
         return input_gradient
+
+    def save(self, file_path):
+        """
+        Saves the Convolutional layer to a file.
+
+        Args:
+            file_path (str): The path to the file.
+
+        """
+        with open(file_path, "wb") as file:
+            state = {
+                "kernels": self.kernels,
+                "biases": self.biases,
+                "input_shape": self.input_shape,
+                "depth": self.depth,
+            }
+            pkl.dump(state, file)
+
+    def load(self, file_path):
+        """
+        Loads the Convolutional layer from a file.
+
+        Args:
+            file_path (str): The path to the file.
+
+        """
+        with open(file_path, "rb") as file:
+            state = pkl.load(file)
+            self.kernels = state["kernels"]
+            self.biases = state["biases"]
+            self.input_shape = state["input_shape"]
+            self.depth = state["depth"]

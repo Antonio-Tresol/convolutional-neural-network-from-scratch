@@ -3,6 +3,27 @@ from layer import Layer
 from activation import Activation
 
 
+class ReLU(Activation):
+    def __init__(self):
+        """
+        Initializes the ReLU activation function.
+
+        The ReLU activation function is defined as:
+        ReLU(x) = max(0, x)
+
+        The derivative of the ReLU activation function is:
+        ReLU_prime(x) = 1 if x > 0 else 0
+        """
+
+        def relu(x):
+            return np.maximum(0, x)
+
+        def relu_prime(x):
+            return (x > 0).astype(x.dtype)
+
+        super().__init__(relu, relu_prime)
+
+
 class Tanh(Activation):
     def __init__(self):
         """

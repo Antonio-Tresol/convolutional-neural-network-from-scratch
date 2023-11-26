@@ -24,3 +24,21 @@ class Layer:
             learning_rate: The learning rate for updating the layer's parameters.
         """
         pass
+
+    def save(self, file_path):
+        """
+        Saves the layer's parameters to the given folder path.
+
+        Args:
+            file_path (str): The path to the folder where the parameters should be saved.
+        """
+        pass
+
+    def load(self, file_path):
+        """
+        Loads the layer's parameters from the given folder path.
+
+        Args:
+            file_path (str): The path to the folder where the parameters should be loaded from.
+        """
+        pass

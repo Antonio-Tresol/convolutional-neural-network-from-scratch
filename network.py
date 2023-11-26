@@ -1,3 +1,7 @@
+import os
+import cupy as np
+
+
 def predict(network, input):
     """
     Predicts the output of the neural network given an input.
@@ -56,3 +60,71 @@ def train(
         error /= len(x_train)
         if verbose:
             print(f"{e + 1}/{epochs}, error={error}")
+
+
+def train_with_batch(
+    x_train,
+    y_train,
+    network,
+    error_data,
+    loss,
+    loss_prime,
+    epochs=1,
+    learning_rate=0.1,
+    verbose=False,
+):
+    """
+    Trains the neural network using batch training.
+
+    Args:
+        x_train (numpy.ndarray): Input data for training.
+        y_train (numpy.ndarray): Target data for training.
+        network (NeuralNetwork): The neural network model.
+        error_data (dict): Dictionary to store the error data during training.
+        loss (function): Loss function used to calculate the error.
+        loss_prime (function): Derivative of the loss function.
+        epochs (int, optional): Number of training epochs. Defaults to 1.
+        learning_rate (float, optional): Learning rate for gradient descent. Defaults to 0.1.
+        verbose (bool, optional): Whether to print training progress. Defaults to False.
+    """
+    train(
+        network,
+        loss,
+        loss_prime,
+        x_train,
+        y_train,
+        epochs=epochs,
+        learning_rate=learning_rate,
+        verbose=verbose,
+        error_data=error_data,
+    )
+
+
+def save(network, file_path="network/layer"):
+    """
+    Saves the parameters of the network to a file.
+
+    Args:
+        network (list): The list of layers in the neural network.
+        file_path (str): The path to the file where the parameters should be saved.
+    """
+    folder_path = file_path.split("/")[0]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    for i, layer in enumerate(network):
+        layer.save(f"{file_path}-{i}")
+        print(f"Layer {i} saved")
+
+
+def load(network, file_path="network/layer"):
+    """
+    Loads the parameters of the network from a file.
+
+    Args:
+        network (list): The list of layers in the neural network.
+        file_path (str): The path to the file where the parameters should be loaded from.
+    """
+    for i, layer in enumerate(network):
+        layer.load(f"{file_path}-{i}")
+        print(f"Layer {i} loaded")

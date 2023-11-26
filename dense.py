@@ -1,5 +1,6 @@
 import cupy as np
 from layer import Layer
+import pickle as pkl
 
 
 class Dense(Layer):
@@ -44,3 +45,23 @@ class Dense(Layer):
         self.weights -= learning_rate * weights_gradient
         self.bias -= learning_rate * output_gradient
         return input_gradient
+
+    def save(self, file_path):
+        """
+        Saves the layer's parameters to the given file path.
+
+        Args:
+            file_path (str): The path to the file where the parameters should be saved.
+        """
+        with open(file_path, "wb") as f:
+            pkl.dump((self.weights, self.bias), f)
+
+    def load(self, file_path):
+        """
+        Loads the layer's parameters from the given file path.
+
+        Args:
+            file_path (str): The path to the file where the parameters should be loaded from.
+        """
+        with open(file_path, "rb") as f:
+            self.weights, self.bias = pkl.load(f)

@@ -80,3 +80,20 @@ def get_images_and_labels(directory, unique_labels, one_hot_encoded):
                 # Append the label of this image to y
                 Y.append(get_y_from_label(label, one_hot_encoded, unique_labels))
     return X, Y
+
+
+def split_data_into_batches(training_data, training_data_output, batch_size=32):
+    """
+    Split the data into batches.
+
+    Args:
+        training_data (list): The input data.
+        training_data_output (list): The expected outputs for the input data.
+        batch_size (int): The size of each batch.
+
+    Returns:
+        list: A list of tuples containing the input and target data for each batch.
+    """
+    training_data_output_split = np.array_split(training_data_output, batch_size)
+    training_data_split = np.array_split(training_data, batch_size)
+    return training_data_split, training_data_output_split

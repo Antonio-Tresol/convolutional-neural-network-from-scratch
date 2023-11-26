@@ -2,11 +2,11 @@ from logging import exception
 import cupy as np
 from sklearn.model_selection import train_test_split
 
-from activations import Sigmoid, Softmax
+from activations import Sigmoid, Softmax, ReLU
 from convolutional import Convolutional
 from dense import Dense
 from losses import categorical_cross_entropy, categorical_cross_entropy_prime
-from network import train, predict
+from network import train, predict, train_with_batch, save
 from reshape import Reshape
 import datahandler as dh
 import time
@@ -41,8 +41,10 @@ def main():
     print("Data normalized.")
 
     x_train, x_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.1, random_state=42
+        X, Y, test_size=0.25, random_state=42
     )
+
+    x_train_split, y_train_split = dh.split_data_into_batches(x_train, y_train, 10)
 
     print("Data split into training and test sets.")
     print(f"Training set size: {x_train.shape[0]}")
@@ -50,11 +52,11 @@ def main():
 
     network = [
         Convolutional(input_shape=(3, 256, 256), kernel_size=3, depth=5),
-        Sigmoid(),
+        ReLU(),
         Convolutional(input_shape=(5, 254, 254), kernel_size=3, depth=5),
-        Sigmoid(),
+        ReLU(),
         Convolutional(input_shape=(5, 252, 252), kernel_size=3, depth=5),
-        Sigmoid(),
+        ReLU(),
         Reshape(input_shape=(5, 250, 250), output_shape=(5 * 250 * 250, 1)),
         Dense(input_size=5 * 250 * 250, output_size=128),
         Sigmoid(),
@@ -69,17 +71,22 @@ def main():
     start = time.time()
     error_data = []
     # Train the network
-    train(
-        network,
-        categorical_cross_entropy,
-        categorical_cross_entropy_prime,
-        x_train,
-        y_train,
-        epochs=10,
-        learning_rate=0.1,
-        verbose=True,
-        error_data=error_data,
-    )
+    learning_rate = 0.1
+
+    for i in range(len(x_train_split) // 2):
+        print(f"Training batch {i + 1} of {len(x_train_split)}")
+        train_with_batch(
+            x_train_split[i],
+            y_train_split[i],
+            network,
+            error_data,
+            categorical_cross_entropy,
+            categorical_cross_entropy_prime,
+            epochs=3,
+            learning_rate=learning_rate,
+            verbose=True,
+        )
+        learning_rate *= 0.99
 
     end = time.time()
     print(f"Time taken in training: {end - start} seconds")
@@ -91,7 +98,7 @@ def main():
         indices = int(np.argmax(prediction))
         predicted_label = unique_labels[indices]
         true_label = unique_labels[int(np.argmax(y))]
-        # print(f"Prediction: {predicted_label}, Actual: {true_label}")
+        print(f"Prediction: {predicted_label}, Actual: {true_label}")
         if predicted_label != true_label:
             errors.append(0)
         else:
@@ -105,6 +112,7 @@ def main():
     np.savetxt("error_data.csv", error_data, delimiter=",")
 
     print(f"Time taken: {end - start} seconds")
+    save(network, "onepiececlassifier/layer")
 
 
 if __name__ == "__main__":
