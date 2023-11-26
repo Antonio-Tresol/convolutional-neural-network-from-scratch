@@ -1,6 +1,7 @@
 from logging import exception
 import cupy as np
 from sklearn.model_selection import train_test_split
+import gc
 
 from activations import Sigmoid, Softmax, ReLU
 from convolutional import Convolutional
@@ -43,6 +44,9 @@ def main():
     x_train, x_test, y_train, y_test = train_test_split(
         X, Y, test_size=0.25, random_state=42
     )
+    # Delete X and Y to free up memory
+    del X, Y
+    gc.collect()
 
     x_train_split, y_train_split = dh.split_data_into_batches(x_train, y_train, 10)
 
@@ -72,9 +76,9 @@ def main():
     error_data = []
     # Train the network
     learning_rate = 0.1
-
-    for i in range(len(x_train_split) // 2):
-        print(f"Training batch {i + 1} of {len(x_train_split)}")
+    total_batches = len(x_train_split)
+    for i in reversed(range(total_batches)):
+        print(f"Training batch {i + 1} of {total_batches}")
         train_with_batch(
             x_train_split[i],
             y_train_split[i],
@@ -86,6 +90,10 @@ def main():
             learning_rate=learning_rate,
             verbose=True,
         )
+        # Delete the last batch to free memory
+        del x_train_split[i]
+        del y_train_split[i]
+        gc.collect()
         learning_rate *= 0.99
 
     end = time.time()
