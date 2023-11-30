@@ -70,7 +70,7 @@ def test_save_and_load_dense_method():
     clean_up()
 
 
-def test_get_get_test_dense_network_method():
+def test_get_adense_network_method():
     # act
     network = nn.get_test_dense_network()
     different_network = nn.get_test_dense_network()
