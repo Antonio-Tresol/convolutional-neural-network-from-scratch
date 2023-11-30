@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 
 def main():
     # Load the error data from the CSV file
-    error_data = np.loadtxt("error_data.csv", delimiter=",")
+    file_path = "error_data.csv"
+    folder_path = "network-error-data"
+    file_path = os.path.join(folder_path, file_path)
+    error_data = np.loadtxt(file_path, delimiter=",")
 
     # Plot the error data
     plt.plot(error_data)
