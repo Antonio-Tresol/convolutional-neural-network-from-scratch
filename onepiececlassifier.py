@@ -95,7 +95,7 @@ def main():
             error_data,
             categorical_cross_entropy,
             categorical_cross_entropy_prime,
-            epochs=3,
+            epochs=10,
             learning_rate=learning_rate,
             verbose=True,
         )
@@ -111,7 +111,7 @@ def main():
     dh.save_classification_error_data(error_data, "error_data.csv")
 
     # Test and display predictions
-    errors = dh.load_classification_error_data()
+    errors = []
 
     for x, y in zip(x_test, y_test):
         prediction = predict(network, x)
@@ -125,7 +125,9 @@ def main():
             errors.append(1)
 
     # save the errors on to the historical errors file
-    dh.save_classification_error_data(errors)
+    history_errors = dh.load_classification_error_data()
+    history_errors = [*history_errors, *errors]
+    dh.save_classification_error_data(history_errors)
 
     errors = np.array(errors)
 
