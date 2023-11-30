@@ -104,7 +104,7 @@ def train_with_batch(
     )
 
 
-def save(network, file_path="network/layer"):
+def save(network, file_path="network-state/layer"):
     """
     Saves the parameters of the network to a file.
 
@@ -121,7 +121,7 @@ def save(network, file_path="network/layer"):
         print(f"Layer {i} saved")
 
 
-def load(network, file_path="network/layer"):
+def load(network, file_path="network-state/layer"):
     """
     Loads the parameters of the network from a file.
 

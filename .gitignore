@@ -3,4 +3,6 @@ output.txt
 errors.csv
 __pycache__
 onepiececlassifier/
-network/
+network-state/
+network-error-data/
+.pytest_cache/
