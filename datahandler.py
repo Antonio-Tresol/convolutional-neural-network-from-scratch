@@ -100,6 +100,14 @@ def split_data_into_batches(training_data, training_data_output, batch_size=32):
     return training_data_split, training_data_output_split
 
 
+def prepare_folders(file_path_joined, folder_path):
+    if not os.path.isdir(folder_path):
+        os.makedirs(folder_path)
+    file_path_joined = os.path.join(folder_path, file_path_joined)
+    if not os.path.isfile(file_path_joined):
+        open(file_path_joined, "w+").close()
+
+
 def save_classification_error_data(
     error_data, file_path="classification_error_data.csv"
 ):
@@ -110,8 +118,14 @@ def save_classification_error_data(
         error_data (list): The list of errors.
         file_path (str): The path to the file where the error data should be saved.
     """
-    error_data = np.array(error_data)
-    np.savetxt(file_path, error_data, delimiter=",")
+    folder_path = "network-error-data"
+    prepare_folders(file_path, folder_path)
+    file_path = os.path.join(folder_path, file_path)
+
+    error_data_to_save = np.zeros((len(error_data)))
+    for i in range(len(error_data)):
+        error_data_to_save[i] = error_data[i]
+    np.savetxt(file_path, error_data_to_save, delimiter=",")
 
 
 def load_classification_error_data(file_path="classification_error_data.csv"):
@@ -122,11 +136,12 @@ def load_classification_error_data(file_path="classification_error_data.csv"):
         file_path (str): The path to the file where the error data is stored.
 
     Returns:
-        list: The list of errors.
+        list: The list of errors, empty list if the file does not exist.
     """
-    try:
+    folder_path = "network-error-data"
+    file_path = os.path.join(folder_path, file_path)
+    if not os.path.isfile(file_path):
+        return []
+    else:
         error_data = np.loadtxt(file_path, delimiter=",").tolist()
-    except Exception as e:
-        print("Error loading historical error data: ", e)
-        error_data = []
     return error_data
