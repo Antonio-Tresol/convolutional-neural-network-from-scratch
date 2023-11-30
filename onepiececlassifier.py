@@ -22,6 +22,7 @@ import time
 
 
 def main():
+    # Get the training data
     directory = input("Enter the path to the training data directory: ")
 
     unique_labels = []
@@ -62,8 +63,11 @@ def main():
     print(f"Training set size: {x_train.shape[0]}")
     print(f"Test set size: {x_test.shape[0]}")
 
+    # Create the network
+
     network = get_medium_size_network()
 
+    # determine if the network should be trained from scratch or loaded from a saved model
     load_data = input("Load saved model? (y/n): ").lower()
     if load_data == "y":
         try:
@@ -76,10 +80,12 @@ def main():
         print("Training new network.")
 
     start = time.time()
-    error_data = []
-    # Train the network
+    error_data = dh.load_classification_error_data("error_data.csv")
+
+    # Train the network with batches
     learning_rate = 0.1
     total_batches = len(x_train_split)
+
     for i in reversed(range(total_batches)):
         print(f"Training batch {i + 1} of {total_batches}")
         train_with_batch(
@@ -101,9 +107,11 @@ def main():
 
     end = time.time()
     print(f"Time taken in training: {end - start} seconds")
+    # save the error data
+    dh.save_classification_error_data(error_data, "error_data.csv")
 
     # Test and display predictions
-    errors = []
+    errors = dh.load_classification_error_data()
 
     for x, y in zip(x_test, y_test):
         prediction = predict(network, x)
@@ -117,9 +125,7 @@ def main():
             errors.append(1)
 
     # save the errors on to the historical errors file
-    historical_errors = dh.load_error_data()
-    historical_errors = [*historical_errors, *errors]
-    dh.save_error_data(historical_errors)
+    dh.save_classification_error_data(errors)
 
     errors = np.array(errors)
 

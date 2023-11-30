@@ -100,7 +100,9 @@ def split_data_into_batches(training_data, training_data_output, batch_size=32):
     return training_data_split, training_data_output_split
 
 
-def save_error_data(error_data, file_path="error_data.csv"):
+def save_classification_error_data(
+    error_data, file_path="classification_error_data.csv"
+):
     """
     Saves the error data to a CSV file.
 
@@ -112,7 +114,7 @@ def save_error_data(error_data, file_path="error_data.csv"):
     np.savetxt(file_path, error_data, delimiter=",")
 
 
-def load_error_data(file_path="error_data.csv"):
+def load_classification_error_data(file_path="classification_error_data.csv"):
     """
     Loads the error data from a CSV file.
 
@@ -124,7 +126,7 @@ def load_error_data(file_path="error_data.csv"):
     """
     try:
         error_data = np.loadtxt(file_path, delimiter=",").tolist()
-    except exception as e:
+    except Exception as e:
         print("Error loading historical error data: ", e)
         error_data = []
     return error_data

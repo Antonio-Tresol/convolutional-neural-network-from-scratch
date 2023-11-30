@@ -133,6 +133,7 @@ def load(network, file_path="network/layer"):
         try:
             layer.load(f"{file_path}-{i}")
         except Exception:
+            # If the layer does not have any parameters, do nothing
             pass
         print(f"Layer {i} loaded")
 
