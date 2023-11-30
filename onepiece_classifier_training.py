@@ -118,23 +118,26 @@ def main():
         indices = int(np.argmax(prediction))
         predicted_label = unique_labels[indices]
         true_label = unique_labels[int(np.argmax(y))]
-        print(f"Prediction: {predicted_label}, Actual: {true_label}")
+        # print green if correct, red if incorrect
+        if predicted_label != true_label:
+            print(f"\033[91mPrediction: {predicted_label}, Actual: {true_label}\033[0m")
+        else:
+            print(f"\033[92mPrediction: {predicted_label}, Actual: {true_label}\033[0m")
         if predicted_label != true_label:
             errors.append(0)
         else:
             errors.append(1)
 
+    errors = np.array(errors)
+
+    print(f"Accuracy on test data: {(errors.sum() / errors.size) * 100}%")
+
+    print(f"Time taken: {end - start} seconds")
     # save the errors on to the historical errors file
     history_errors = dh.load_classification_error_data()
     history_errors = [*history_errors, *errors]
+
     dh.save_classification_error_data(history_errors)
-
-    errors = np.array(errors)
-
-    print(f"Accuracy on test data: {errors.sum() / errors.size * 100}%")
-
-    print(f"Time taken: {end - start} seconds")
-
     save(network)
 
 
