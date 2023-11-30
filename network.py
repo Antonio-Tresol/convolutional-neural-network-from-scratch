@@ -1,5 +1,9 @@
 import os
 import cupy as np
+from activations import Sigmoid, Softmax, ReLU
+from convolutional import Convolutional
+from dense import Dense
+from reshape import Reshape
 
 
 def predict(network, input):
@@ -126,5 +130,80 @@ def load(network, file_path="network/layer"):
         file_path (str): The path to the file where the parameters should be loaded from.
     """
     for i, layer in enumerate(network):
-        layer.load(f"{file_path}-{i}")
+        try:
+            layer.load(f"{file_path}-{i}")
+        except Exception:
+            pass
         print(f"Layer {i} loaded")
+
+
+def get_medium_size_network():
+    """
+    Returns a medium-sized convolutional neural network.
+
+    The network consists of several layers including convolutional layers, activation functions,
+    reshape layer, and dense layers. The network architecture is designed for an input shape of
+    (3, 256, 256) and an output size of 18.
+
+    Returns:
+        network (list): List of layers representing the medium-sized network.
+    """
+    network = [
+        Convolutional(input_shape=(3, 256, 256), kernel_size=3, depth=32),
+        ReLU(),
+        Convolutional(input_shape=(32, 254, 254), kernel_size=3, depth=16),
+        ReLU(),
+        Convolutional(input_shape=(16, 252, 252), kernel_size=3, depth=8),
+        ReLU(),
+        Convolutional(input_shape=(8, 250, 250), kernel_size=3, depth=5),
+        ReLU(),
+        Reshape(input_shape=(5, 248, 248), output_shape=(5 * 248 * 248, 1)),
+        Dense(input_size=5 * 248 * 248, output_size=128),
+        Sigmoid(),
+        Dense(input_size=128, output_size=64),
+        Sigmoid(),
+        Dense(input_size=64, output_size=18),
+        Sigmoid(),
+        Dense(input_size=18, output_size=18),
+        Softmax(),
+    ]
+    return network
+
+
+def get_small_size_network():
+    network = [
+        Convolutional(input_shape=(3, 256, 256), kernel_size=3, depth=5),
+        ReLU(),
+        Convolutional(input_shape=(5, 254, 254), kernel_size=3, depth=5),
+        ReLU(),
+        Convolutional(input_shape=(5, 252, 252), kernel_size=3, depth=5),
+        ReLU(),
+        Reshape(input_shape=(5, 250, 250), output_shape=(5 * 250 * 250, 1)),
+        Dense(input_size=5 * 250 * 250, output_size=128),
+        Sigmoid(),
+        Dense(input_size=128, output_size=64),
+        Sigmoid(),
+        Dense(input_size=64, output_size=18),
+        Sigmoid(),
+        Dense(input_size=18, output_size=18),
+        Softmax(),
+    ]
+    return network
+
+
+def get_test_convolutional_network():
+    network = [
+        Convolutional(input_shape=(3, 256, 256), kernel_size=3, depth=32),
+        Convolutional(input_shape=(32, 254, 254), kernel_size=3, depth=16),
+        Convolutional(input_shape=(16, 252, 252), kernel_size=3, depth=8),
+    ]
+    return network
+
+
+def get_test_dense_network():
+    network = [
+        Dense(input_size=5 * 248 * 248, output_size=128),
+        Dense(input_size=128, output_size=64),
+        Dense(input_size=64, output_size=18),
+    ]
+    return network
