@@ -7,7 +7,15 @@ from activations import Sigmoid, Softmax, ReLU
 from convolutional import Convolutional
 from dense import Dense
 from losses import categorical_cross_entropy, categorical_cross_entropy_prime
-from network import train, predict, train_with_batch, save
+from network import (
+    train,
+    predict,
+    train_with_batch,
+    save,
+    load,
+    get_small_size_network,
+    get_medium_size_network,
+)
 from reshape import Reshape
 import datahandler as dh
 import time
@@ -48,29 +56,24 @@ def main():
     del X, Y
     gc.collect()
 
-    x_train_split, y_train_split = dh.split_data_into_batches(x_train, y_train, 10)
+    x_train_split, y_train_split = dh.split_data_into_batches(x_train, y_train, 20)
 
     print("Data split into training and test sets.")
     print(f"Training set size: {x_train.shape[0]}")
     print(f"Test set size: {x_test.shape[0]}")
 
-    network = [
-        Convolutional(input_shape=(3, 256, 256), kernel_size=3, depth=5),
-        ReLU(),
-        Convolutional(input_shape=(5, 254, 254), kernel_size=3, depth=5),
-        ReLU(),
-        Convolutional(input_shape=(5, 252, 252), kernel_size=3, depth=5),
-        ReLU(),
-        Reshape(input_shape=(5, 250, 250), output_shape=(5 * 250 * 250, 1)),
-        Dense(input_size=5 * 250 * 250, output_size=128),
-        Sigmoid(),
-        Dense(input_size=128, output_size=64),
-        Sigmoid(),
-        Dense(input_size=64, output_size=18),
-        Sigmoid(),
-        Dense(input_size=18, output_size=18),
-        Softmax(),
-    ]
+    network = get_medium_size_network()
+
+    load_data = input("Load saved model? (y/n): ").lower()
+    if load_data == "y":
+        try:
+            load(network)
+        except exception as e:
+            print("Error loading network. : ", e)
+            print("Training new network.")
+        print("Network loaded.")
+    else:
+        print("Training new network.")
 
     start = time.time()
     error_data = []
@@ -98,6 +101,7 @@ def main():
 
     end = time.time()
     print(f"Time taken in training: {end - start} seconds")
+
     # Test and display predictions
     errors = []
 
@@ -112,15 +116,18 @@ def main():
         else:
             errors.append(1)
 
+    # save the errors on to the historical errors file
+    historical_errors = dh.load_error_data()
+    historical_errors = [*historical_errors, *errors]
+    dh.save_error_data(historical_errors)
+
     errors = np.array(errors)
 
     print(f"Accuracy on test data: {errors.sum() / errors.size * 100}%")
-    np.savetxt("errors.csv", errors, delimiter=",")
-    error_data = np.array(error_data)
-    np.savetxt("error_data.csv", error_data, delimiter=",")
 
     print(f"Time taken: {end - start} seconds")
-    save(network, "onepiececlassifier/layer")
+
+    save(network)
 
 
 if __name__ == "__main__":
