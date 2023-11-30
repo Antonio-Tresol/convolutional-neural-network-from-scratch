@@ -2,4 +2,5 @@ error_data.csv
 output.txt
 errors.csv
 __pycache__
-onepiececlassifier
+onepiececlassifier/
+network/
