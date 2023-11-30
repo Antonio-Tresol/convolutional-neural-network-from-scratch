@@ -1,3 +1,4 @@
+from logging import exception
 import os
 
 import cupy as np
@@ -97,3 +98,33 @@ def split_data_into_batches(training_data, training_data_output, batch_size=32):
     training_data_output_split = np.array_split(training_data_output, batch_size)
     training_data_split = np.array_split(training_data, batch_size)
     return training_data_split, training_data_output_split
+
+
+def save_error_data(error_data, file_path="error_data.csv"):
+    """
+    Saves the error data to a CSV file.
+
+    Args:
+        error_data (list): The list of errors.
+        file_path (str): The path to the file where the error data should be saved.
+    """
+    error_data = np.array(error_data)
+    np.savetxt(file_path, error_data, delimiter=",")
+
+
+def load_error_data(file_path="error_data.csv"):
+    """
+    Loads the error data from a CSV file.
+
+    Args:
+        file_path (str): The path to the file where the error data is stored.
+
+    Returns:
+        list: The list of errors.
+    """
+    try:
+        error_data = np.loadtxt(file_path, delimiter=",").tolist()
+    except exception as e:
+        print("Error loading historical error data: ", e)
+        error_data = []
+    return error_data
