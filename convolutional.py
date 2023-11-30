@@ -27,7 +27,7 @@ class Convolutional(Layer):
         )
         self.kernels_shape = (depth, input_depth, kernel_size, kernel_size)
         self.kernels = np.random.randn(*self.kernels_shape)
-        self.biases = np.random.randn(*self.output_shape)
+        self.biases = np.zeros(self.output_shape)
 
     def forward(self, input):
         """
@@ -102,9 +102,13 @@ class Convolutional(Layer):
             file_path (str): The path to the file.
 
         """
-        with open(file_path, "rb") as file:
-            state = pkl.load(file)
-            self.kernels = state["kernels"]
-            self.biases = state["biases"]
-            self.input_shape = state["input_shape"]
-            self.depth = state["depth"]
+        try:
+            with open(file_path, "rb") as file:
+                state = pkl.load(file)
+                self.kernels = state["kernels"]
+                self.biases = state["biases"]
+                self.input_shape = state["input_shape"]
+                self.depth = state["depth"]
+        except Exception:
+            # If the file does not exist, do nothing
+            pass

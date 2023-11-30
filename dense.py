@@ -14,7 +14,7 @@ class Dense(Layer):
         """
         super().__init__()
         self.weights = np.random.randn(output_size, input_size)
-        self.bias = np.random.randn(output_size, 1)
+        self.bias = np.zeros((output_size, 1))
 
     def forward(self, input):
         """
@@ -63,5 +63,9 @@ class Dense(Layer):
         Args:
             file_path (str): The path to the file where the parameters should be loaded from.
         """
-        with open(file_path, "rb") as f:
-            self.weights, self.bias = pkl.load(f)
+        try:
+            with open(file_path, "rb") as f:
+                self.weights, self.bias = pkl.load(f)
+        except Exception:
+            # do nothing if file doesn't exist
+            pass
