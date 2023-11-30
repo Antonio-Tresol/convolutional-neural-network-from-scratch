@@ -39,3 +39,21 @@ class Reshape(Layer):
             ndarray: The gradient of the loss with respect to the input tensor.
         """
         return np.reshape(output_gradient, self.input_shape)
+
+    def save(self, file_path):
+        """
+        Saves the layer's parameters to the given file path.
+
+        Args:
+            file_path (str): The path to the file where the parameters should be saved.
+        """
+        pass
+
+    def load(self, file_path):
+        """
+        Loads the layer's parameters from the given file path.
+
+        Args:
+            file_path (str): The path to the file where the parameters should be loaded from.
+        """
+        pass
