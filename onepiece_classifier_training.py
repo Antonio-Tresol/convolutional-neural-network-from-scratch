@@ -104,6 +104,7 @@ def main():
         del y_train_split[i]
         gc.collect()
         learning_rate *= 0.99
+        save(network)
 
     end = time.time()
     print(f"Time taken in training: {end - start} seconds")
